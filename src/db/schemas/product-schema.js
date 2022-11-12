@@ -2,6 +2,10 @@ import { Schema } from "mongoose";
 
 const ProductSchema = new Schema(
   {
+    productId:{
+      type:Number,
+      required:true,
+    },
     name:{
         type:String,
         required:true,
@@ -21,16 +25,32 @@ const ProductSchema = new Schema(
         type:String,
         required:true,
     },
-    categoryId:{
+    categoryObjId:{
       type: Schema.Types.ObjectId,
       requried: true,
       ref: 'categories',
+    },  
+      
+    categoryId:{
+      type:Number,
+      required:true,
+    },
+    categoryName:{
+      type:String,
+      required:true,
+    },
+    createdTime : { 
+      type: String
+    },
+    updatedTime : { 
+      type: String
     }
   },
   {
     collection: "products",
-    timestamps: true,
+    timestamps: false,
   }
 );
 
 export { ProductSchema };
+

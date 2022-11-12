@@ -1,101 +1,21 @@
 import * as Api from "../../api.js";
 import { addCommas } from "../../useful-functions.js";
+import { getImageUrl } from "../../aws-s3.js";
 
 // 요소(element), input 혹은 상수
-const right_arrow = document.querySelector(".right-arrow");
-const left_arrow = document.querySelector(".left-arrow");
+const rightArrow = document.querySelector(".right-arrow");
+const leftArrow = document.querySelector(".left-arrow");
+const Category = document.querySelector(".category");
+const bottomInner = document.querySelector(".bottom-products-container");
+const allResult = document.querySelector("#all-result-button");
 
-right_arrow.addEventListener("click", right_arrow_handler);
-left_arrow.addEventListener("click", left_arrow_handler);
-//데이터
-const orderData = {
-  data: [
-    {
-      id: "1",
-      address: "경기도 수원시 장안구 엄복동",
-      item: "정호진",
-      category: "010-2333-9654",
-      img: "../../images/닭가슴살.png",
-      Price: 10000,
-    },
-    {
-      id: "2",
-      address: "경기도 수원시 장안구 엄복동",
-      item: "김민수",
-      category: "010-2333-9654",
-      img: "../../images/닭가슴살.png",
-      Price: 10000,
-    },
-    {
-      id: "3",
-      address: "경기도 수원시 장안구 엄복동",
-      item: "김민수",
-      category: "010-2333-9654",
-      img: "../../images/도시락.png",
-      Price: 10000,
-    },
-    {
-      id: "4",
-      address: "경기도 수원시 장안구 엄복동",
-      item: "김민수",
-      category: "010-2333-9654",
-      img: "../../images/건강식품.png",
-      Price: 10000,
-    },
-    {
-      id: "5",
-      address: "경기도 수원시 장안구 엄복동",
-      item: "김민수",
-      category: "010-2333-9654",
-      img: "../../images/프로틴음료.png",
-      Price: 10000,
-    },
-    {
-      id: "6",
-      address: "경기도 수원시 장안구 엄복동",
-      item: "닭가슴살",
-      category: "010-2333-9654",
-      img: "../../images/닭가슴살.png",
-      Price: 10000,
-    },
-    {
-      id: "7",
-      address: "경기도 수원시 장안구 엄복동",
-      item: "김민수",
-      category: "010-2333-9654",
-      img: "../../images/닭가슴살.png",
-      Price: 10000,
-    },
-    {
-      id: "8",
-      address: "경기도 수원시 장안구 엄복동",
-      item: "김민수",
-      category: "010-2333-9654",
-      img: "배송전",
-      Price: 10000,
-    },
-    {
-      id: "9",
-      address: "경기도 수원시 장안구 엄복동",
-      item: "김민수",
-      category: "010-2333-9654",
-      img: "배송전",
-      Price: 10000,
-    },
-    {
-      id: "10",
-      address: "경기도 수원시 장안구 엄복동",
-      item: "김민수",
-      category: "010-2333-9654",
-      img: "배송전",
-      Price: 10000,
-    },
-  ],
-};
+rightArrow.addEventListener("click", rightArrowHandler);
+leftArrow.addEventListener("click", leftArrowHandler);
+allResult.addEventListener("click", allProduct);
 
 // Click Image Slider
 
-function left_arrow_handler() {
+function leftArrowHandler() {
   let currentSlide = document.querySelector("#photo .slide.active");
   let prevSlide = currentSlide.previousElementSibling;
   if (prevSlide === null) {
@@ -127,7 +47,7 @@ function left_arrow_handler() {
   prevSlide.classList.add("active");
 }
 
-function right_arrow_handler() {
+function rightArrowHandler() {
   let currentSlide = document.querySelector("#photo .slide.active");
   let nextSlide = currentSlide.nextElementSibling;
   if (nextSlide === null) {
@@ -159,44 +79,123 @@ function right_arrow_handler() {
   nextSlide.classList.add("active");
 }
 
-// html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-const bottomInner = document.querySelector(".bottom-products-container");
+// 카테고리 생성
+async function addCategory() {
+  const categorys = await Api.get("/category");
+  console.log(categorys);
 
-// 아이템 받아오기.
-const getItemList = async () => {
-  const data = orderData.data;
-  console.log(data);
-  console.log(
-    data.map((data, i) => {
-      console.log(data.id);
-    }),
-  );
-  // TODO : 부모 요소로 클릭해서 페이지 이동하게 변경해주세요.
-  // TODO : 리턴값을 따로 함수로 빼는게 어떨까요..
-  const result = data
-    .map((data, i) => {
-      if (i > 6) return;
-      else {
-        return `<div class ="bottom-products column">
-          <div class="bottom-product-image-container"> 
-              <a href="/user/products/${
-                data.id
-              }"><img class="bottom-product-image" src="${data.img}" alt=""></a>
-          </div>
-          <div class="bottom-product-name">
-              <a href="/user/products/${data.id}">${data.item}</a>
-          </div>
-          <div class="bottom-product-price">
-              ${addCommas(data.Price) + "원"}
-          </div>
-          </div>
-          `;
-        // 시간에 따라서 최신상품들만 보여주고 싶다.
-        // 타임스템프를 적용하면 될듯 ?
-      }
-    })
-    .join("");
-  bottomInner.innerHTML = result;
-};
+  for (const category of categorys) {
+    const { id, name } = category;
+    // const imageUrl = await getImageUrl(titleImage);
 
-getItemList();
+    Category.innerHTML += `<div class ="category-item" id="${id}">
+        <div class="bottom-product-name">
+        <p>${name}</p>
+        </div>
+        </div>`;
+  }
+}
+
+// 전체 상품 생성.
+
+async function addProduct() {
+  const products = await Api.get("/products");
+  console.log(products);
+  for (const product of products) {
+    const { id, name, price, description } = product;
+    const { titleImage } = description;
+    const imageUrl = await getImageUrl(titleImage);
+
+    bottomInner.innerHTML += ` <div class ="bottom-products ${id}"><a href="/user/products/${id}">
+    <div class="bottom-product-image-container">
+    <img class="bottom-product-image" src="${imageUrl}" alt="">
+    </div>
+    <div class="bottom-product-name">
+    <p>${name}</p>
+    </div>
+    <div class="bottom-product-price">
+    ${addCommas(price) + "원"}
+    </div>
+    </div>
+    `;
+  }
+}
+
+//바탕에 깔아두기
+addCategory();
+addProduct();
+
+// 카테고리 버튼 누르면 상품 나오는 이벤트
+
+Category.addEventListener("click", async (e) => {
+  e.preventDefault();
+  let a = e.target.parentNode.parentNode.id;
+  try {
+    const products = await Api.get("/products");
+    const addTitleImage = await Promise.all(
+      products
+        .filter((data, i) => {
+          return data.categoryId == a;
+        })
+        .map(async (data) => {
+          return {
+            ...data,
+            titleImage: await getImageUrl(data.description.titleImage),
+          };
+        }),
+    );
+
+    let result = addTitleImage
+      .map((data) => {
+        return `<div class ="bottom-products"><a href="/user/products/${
+          data.id
+        }">
+              <div class="bottom-product-image-container">
+              <img class="bottom-product-image" src="${data.titleImage}" alt="">
+              </div>
+              <div class="bottom-product-name">
+              <p>${data.name}</p>
+              </div>
+              <div class="bottom-product-price">
+              ${addCommas(data.price) + "원"}
+              </div>
+              </div>
+              `;
+      })
+      .join("");
+    if (result == 0) {
+    }
+
+    bottomInner.innerHTML =
+      result.length == 0
+        ? `<div class="nothing-products"><p class="nothing">상품 준비 중 입니다.</p></div>`
+        : result;
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// 전체 상품 보기 버튼
+async function allProduct(e) {
+  e.preventDefault();
+  const products = await Api.get("/products");
+  bottomInner.innerHTML = "";
+  for (const product of products) {
+    const { id, name, price, description } = product;
+    const { titleImage } = description;
+    const imageUrl = await getImageUrl(titleImage);
+
+    bottomInner.innerHTML += ` <div class ="bottom-products ${id}"><a href="/user/products/${id}">
+    <div class="bottom-product-image-container">
+    <img class="bottom-product-image" src="${imageUrl}" alt="">
+    </div>
+    <div class="bottom-product-name">
+    <p>${name}</p>
+    </div>
+    <div class="bottom-product-price">
+    ${addCommas(price) + "원"}
+    </div>
+    </div>
+    `;
+  }
+}

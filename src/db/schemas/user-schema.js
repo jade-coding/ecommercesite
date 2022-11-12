@@ -2,6 +2,10 @@ import { Schema } from "mongoose";
 
 const UserSchema = new Schema(
   {
+    userId:{
+      type:Number,
+      required:true,
+    },
     email: {
       type: String,
       required: true,
@@ -12,7 +16,7 @@ const UserSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     phoneNumber: {
       type: String,
@@ -33,14 +37,24 @@ const UserSchema = new Schema(
     },
     role: { // authority : user || admin
       type: String,
-      required: false,
       default: "user",
     },
+    access:{
+      type:String,
+      default:"general" 
+    },
+    createdTime : { 
+      type: String
+    },
+    updatedTime : { 
+      type: String
+    }
   },
   {
     collection: "users",
-    timestamps: true,
+    timestamps: false,
   }
 );
 
 export { UserSchema };
+

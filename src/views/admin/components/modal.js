@@ -11,7 +11,7 @@ export const categoryAppendModal = `
       </div>
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success category-append">추가하기</button>
+      <button class="button primary category-append">추가하기</button>
       <button class="button close-button">취소하기</button>
     </footer>
   </div>
@@ -28,11 +28,11 @@ export const categoryUpdateModal = (data) => {
     <section class="modal-card-body">
       <div class="content">
         <label>카테고리 이름</label>
-        <input class="category-input input" value="${data.categoryName}" />
+        <input class="category-input input" value="${data.name}" />
       </div>
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success" data-type="categoryUpdate">수정하기</button>
+      <button class="button primary" data-type="categoryUpdate">수정하기</button>
       <button class="button" data-type="categoryDelete">삭제하기</button>
     </footer>
   </div>`;
@@ -61,19 +61,18 @@ export function productModal(categories = []) {
             <div class="control">
               <div class="select full-select">
                 <select id="categoryId" >
-                  ${categories
-                    .map(
-                      ({ id, categoryName }) =>
-                        `<option value=${id}>${categoryName}</option>`,
-                    )
-                    .join("")}
+                  ${categories.reduce(
+                    (acc, { id, name }) =>
+                      (acc += `<option value=${id}>${name}</option>`),
+                    "",
+                  )}
                 </select>
               </div>
             </div>
           </div>
 
           <div class="field">
-            <label class="label">상품명</label>
+            <label class="label">제조사</label>
             <div class="control">
               <input
                 class="input"
@@ -83,45 +82,84 @@ export function productModal(categories = []) {
               />
             </div>
           </div>
-          <div class="field">
-            <label class="label">제품 설명</label>
-            <div class="control">
-              <textarea
-                class="textarea"
-                placeholder="제품 설명을 입력해주세요"
-                id="description"
-              ></textarea>
-            </div>
-          </div>
-          <div class="field">
-            <label class="label">제품 이미지</label>
-            <div class="file">
-              <label class="file-label">
-                <input class="file-input" type="file" name="resume" id="file" />
-                <span class="file-cta">
-                  <span class="file-icon">
-                    <i class="fas fa-upload"></i>
-                  </span>
-                  <span class="file-label">컴퓨터에서 선택</span>
+             
+        <div class="field">
+        <label class="label">제품 설명</label>
+        <div class="control">
+          <textarea class="textarea" id="summary" data-type="description"></textarea>
+        </div>
+      </div>
+        <div class="field file-field">
+          <label class="label">메인 이미지</label>
+          <div class="file">
+            <label class="file-label">
+              <input class="file-input" type="file" name="resume" data-type="title" />
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
                 </span>
-              </label>
-            </div>
-            <figure></figure>
+                <span class="file-label">컴퓨터에서 선택</span>
+              </span>
+            </label>
           </div>
-          
+          <figure class="title-image"></figure>
 
-          <div class="field">
-            <label class="label">재고량</label>
-            <div class="control">
-              <input
-                class="input"
-                id="stock"
-                placeholder="재고량을 입력해주세요"
-                type="number"
-                
-              />
-            </div>
+          <label class="label">상세 이미지</label>
+          <div class="file">
+            <label class="file-label">
+              <input class="file-input" type="file" name="resume" data-type="detail" />
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">컴퓨터에서 선택</span>
+              </span>
+            </label>
           </div>
+          <figure class="detail-image"></figure>
+
+          <label class="label">배달 이미지</label>
+          <div class="file">
+            <label class="file-label">
+              <input class="file-input" type="file" name="resume" data-type="delivery" />
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">컴퓨터에서 선택</span>
+              </span>
+            </label>
+          </div>
+          <figure class="delivery-image"></figure>
+
+          <label class="label">영양 이미지</label>
+          <div class="file">
+            <label class="file-label">
+              <input class="file-input" type="file" name="resume"  data-type="nutrition"/>
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">컴퓨터에서 선택</span>
+              </span>
+            </label>
+          </div>
+          <figure class="nutrition-image"></figure>
+        </div>
+
+
+        <div class="field">
+          <label class="label">재고량</label>
+          <div class="control">
+            <input
+              class="input"
+              id="stock"
+              placeholder="재고량을 입력해주세요"
+              type="number"
+              
+            />
+          </div>
+        </div>
 
           <div class="field">
             <label class="label">가격</label>
@@ -137,7 +175,7 @@ export function productModal(categories = []) {
           </div>
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-success append-button" data-type="submit">
+          <button class="button primary append-button" data-type="submit">
             추가하기
           </button>
           <button class="button close-button" data-type="close">
@@ -149,7 +187,6 @@ export function productModal(categories = []) {
 }
 
 export function closeModal() {
-  document
-    .querySelector("body")
-    .removeChild(document.querySelector("body").firstChild);
+  const $modal = document.querySelector(".modal");
+  document.querySelector("body").removeChild($modal);
 }

@@ -5,7 +5,7 @@ import { tableTemplate } from "../components/tableTemplate.js";
 
 const ORDER_COLUMNS = [
   ["id", "주문 아이디"],
-  ["consumerName", "주문자 이름"],
+  ["userName", "주문자 이름"],
   ["phoneNumber", "전화번호"],
   ["status", "배송 상태"],
   ["detailButton", "상세정보 가기"],
@@ -19,11 +19,16 @@ export default function Orders({ $app, initialState, searchHandler }) {
   this.$element.addEventListener("click", (e) => {
     e.preventDefault();
     const { type, detailId } = e.target.dataset;
-    if (type === "detail") {
-      appendDetailMoveHandler(detailId, this.state, "OrderDetails");
-    } else if (type === "search") {
-      const $inputVal = this.$element.querySelector(".search-input");
-      searchHandler($inputVal.value);
+    switch (type) {
+      case "detail":
+        appendDetailMoveHandler(detailId, this.state, "OrderDetails");
+        break;
+      case "search":
+        const $inputVal = this.$element.querySelector(".search-input");
+        searchHandler($inputVal.value);
+        break;
+      default:
+        return;
     }
   });
 

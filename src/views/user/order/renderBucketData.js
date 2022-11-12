@@ -1,8 +1,11 @@
-export default function renderBucketData(name, stock) {
+export default function renderBucketData(name, stock, price) {
   return `
     <div class="columns">
-        <div class="card-content">${name}</div>
-        <div class="card-content">${stock}</div>
+        <div class="column">${name}</div>
+        <div class="column">${stock}개</div>
+        <div class="column">${(stock * price).toLocaleString(
+          "ko-KR",
+        )}<span>원</span></div>
     </div>
     `;
 }
