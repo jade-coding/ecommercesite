@@ -2,17 +2,21 @@ import { Schema } from "mongoose";
 
 const UserSchema = new Schema(
   {
+    userId:{
+      type:Number,
+      required:true,
+    },
     email: {
       type: String,
       required: true,
     },
-    fullName: {
+    name: {
       type: String,
       required: true,
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     phoneNumber: {
       type: String,
@@ -31,16 +35,26 @@ const UserSchema = new Schema(
       ),
       required: false,
     },
-    role: {
+    role: { // authority : user || admin
       type: String,
-      required: false,
-      default: "basic-user",
+      default: "user",
     },
+    access:{
+      type:String,
+      default:"general" 
+    },
+    createdTime : { 
+      type: String
+    },
+    updatedTime : { 
+      type: String
+    }
   },
   {
     collection: "users",
-    timestamps: true,
+    timestamps: false,
   }
 );
 
 export { UserSchema };
+
